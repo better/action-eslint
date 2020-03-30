@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { existsSync } from 'fs';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { CHECK_NAME, EXTENSIONS_TO_LINT } from './constants';
@@ -49,6 +50,7 @@ async function run() {
 
   const filesToLint = files
     .filter(f => EXTENSIONS_TO_LINT.has(path.extname(f.path)))
+    .filter(f => existsSync(f.path)) // ignore deleted files
     .map(f => f.path);
   if (filesToLint.length < 1) {
     console.warn(
