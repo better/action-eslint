@@ -1,4 +1,4 @@
-# Lint changed Pull Request files with ESLint from GitHub Action
+# Lint changed files with ESLint using GitHub Action
 
 Using this GitHub Action, scan files changed in current Pull Request with inline code annotations:
 
@@ -43,3 +43,6 @@ jobs:
 ## License
 
 All scripts and documentation in this project are released under the MIT License.
+
+## Development
+- Compile Typescript (`npm run build`) and commit the `lib/` diffs.
