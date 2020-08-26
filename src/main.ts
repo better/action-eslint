@@ -1,9 +1,11 @@
-import * as path from 'path';
-import { existsSync } from 'fs';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { existsSync } from 'fs';
+import * as path from 'path';
+import picomatch from 'picomatch';
 import { CHECK_NAME, EXTENSIONS_TO_LINT } from './constants';
 import { eslint } from './eslint-cli';
+import { getInputAsArray } from './utils';
 
 /**
  * This is just for syntax highlighting, does nothing
@@ -48,9 +50,12 @@ async function run() {
   // console.log('Commit from GraphQL:', currentSha);
   const files = prInfo.repository.pullRequest.files.nodes;
 
+  const ignorePatterns = getInputAsArray('ignore-patterns');
+
   const filesToLint = files
     .filter(f => EXTENSIONS_TO_LINT.has(path.extname(f.path)))
     .filter(f => existsSync(f.path)) // ignore deleted files
+    .filter(f => !picomatch.isMatch(f.path, ignorePatterns))
     .map(f => f.path);
   if (filesToLint.length < 1) {
     console.warn(
