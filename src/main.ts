@@ -5,7 +5,7 @@ import * as path from 'path';
 import picomatch from 'picomatch';
 import { CHECK_NAME, EXTENSIONS_TO_LINT } from './constants';
 import { eslint } from './eslint-cli';
-import * as utils from './utils';
+import { getInputAsArray } from './utils';
 
 /**
  * This is just for syntax highlighting, does nothing
@@ -50,7 +50,7 @@ async function run() {
   // console.log('Commit from GraphQL:', currentSha);
   const files = prInfo.repository.pullRequest.files.nodes;
 
-  const ignorePatterns = utils.getInputAsArray('ignore-patterns');
+  const ignorePatterns = getInputAsArray('ignore-patterns');
 
   const filesToLint = files
     .filter(f => EXTENSIONS_TO_LINT.has(path.extname(f.path)))
