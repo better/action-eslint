@@ -45,6 +45,7 @@ export async function eslint(filesList: string[], diff: string) {
 
   const annotations: ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
+    console.log(result);
     const { filePath, messages } = result;
     const filename = filesList.find(file => filePath.endsWith(file));
     if (!filename) continue;
@@ -54,7 +55,7 @@ export async function eslint(filesList: string[], diff: string) {
       console.log(msg);
       for (let lineNumber = msg.line; lineNumber <= msg.endLine; lineNumber++)
       {
-        if (changedLinesByFilepath.get(filePath)?.has(lineNumber)) {
+        if (changedLinesByFilepath.get(filename)?.has(lineNumber)) {
           console.log(`startLine: ${msg.line}`)
           console.log(`endLine: ${msg.endLine}`)
           const annotation = buildAnnotation(filename, msg);
