@@ -35,12 +35,12 @@ const getHunksFromDiff = (str) => {
   return hunks;
 };
 
-export const getChangedLinesByFile = (diff) => {
-  const changedLinesByFile = new Map();
+export const getChangedLinesByFilepath = (diff) => {
+  const changedLinesByFilepath = new Map();
 
   for (const hunk of getHunksFromDiff(diff)) {
     const file = hunk[0].split(' ')[3].substring(2);
     changedLinesByFile.set(file, new Set(getChangedLinesFromHunk(hunk.slice(4))));
   }
-  return changedLinesByFile;
+  return changedLinesByFilepath;
 };

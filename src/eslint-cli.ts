@@ -4,7 +4,7 @@ import { ChecksUpdateParamsOutputAnnotations } from '@octokit/rest';
 
 import { EXTENSIONS_TO_LINT } from './constants';
 
-import { getChangedLinesByFile } from './git'
+import { getChangedLinesByFilepath } from './git'
 
 const ESLINT_TO_GITHUB_LEVELS: ChecksUpdateParamsOutputAnnotations['annotation_level'][] = [
   'notice',
@@ -39,7 +39,7 @@ export async function eslint(filesList: string[], diff: string) {
   const { results, errorCount, warningCount } = report;
 
 
-  const changedLinesByFile = getChangedLinesByFile(diff)
+  const changedLinesByFilepath = getChangedLinesByFilepath(diff)
 
   const annotations: ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
@@ -52,7 +52,7 @@ export async function eslint(filesList: string[], diff: string) {
 
       for (let lineNumber = msg.line; lineNumber <= msg.endLine; lineNumber++)
       {
-        if (changedLinesByFile.get(filePath).has(lineNumber)) {
+        if (changedLinesByFilepath.get(filePath).has(lineNumber)) {
           const annotation = buildAnnotation(filename, msg);
           annotations.push(annotation);
           break;
