@@ -38,26 +38,19 @@ export async function eslint(filesList: string[], diff: string) {
   // fixableErrorCount, fixableWarningCount are available too
   const { results, errorCount, warningCount } = report;
 
-  console.log(filesList)
-  console.log(diff)
   const changedLinesByFilepath = getChangedLinesByFilepath(diff)
-  console.log(changedLinesByFilepath)
 
   const annotations: ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
-    console.log(result);
     const { filePath, messages } = result;
     const filename = filesList.find(file => filePath.endsWith(file));
     if (!filename) continue;
 
     for (const msg of messages) {
       if (annotations.length >= ANNOTATION_LIMIT) break;
-      console.log(msg);
       for (let lineNumber = msg.line; lineNumber <= msg.endLine; lineNumber++)
       {
         if (changedLinesByFilepath.get(filename)?.has(lineNumber)) {
-          console.log(`startLine: ${msg.line}`)
-          console.log(`endLine: ${msg.endLine}`)
           const annotation = buildAnnotation(filename, msg);
           annotations.push(annotation);
           break;
