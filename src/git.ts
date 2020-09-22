@@ -1,22 +1,18 @@
 const getChangedLinesFromHunk = (hunk) => {
   let lineNumber = 0;
-  const changedLines = [];
 
-  for (const line of hunk) {
+  return hunk.reduce((accum, line) => {
     if (line.startsWith('@@')) {
       lineNumber = Number(line.match(/\+([0-9]+)/)[1]);
-      continue;
-    }
-
-    if (!line.startsWith('-')) {
-      if (line.startsWith('+') && lineNumber != 0) {
-        changedLines.push(lineNumber);
+    } else if (!line.startsWith('-')) {
+      if (line.startsWith('+') && lineNumber !== 0) {
+        accum.push(lineNumber);
       }
       lineNumber++;
     }
-  }
-
-  return changedLines;
+    
+    return accum;
+  }, []);
 };
 
 const getHunksFromDiff = (str) => {
