@@ -6,6 +6,8 @@ import { EXTENSIONS_TO_LINT } from './constants';
 
 import { getChangedLinesByFilepath } from './git'
 
+import * as core from '@actions/core';
+
 const ESLINT_TO_GITHUB_LEVELS: ChecksUpdateParamsOutputAnnotations['annotation_level'][] = [
   'notice',
   'warning',
@@ -38,10 +40,10 @@ export async function eslint(filesList: string[], diff: string) {
   // fixableErrorCount, fixableWarningCount are available too
   const { results, errorCount, warningCount } = report;
 
-  console.log(filesList)
-  console.log(diff)
+  core.info(JSON.stringify(filesList))
+  core.info(diff)
   const changedLinesByFilepath = getChangedLinesByFilepath(diff)
-  console.log(changedLinesByFilepath)
+  core.info(JSON.stringify(changedLinesByFilepath))
 
   const annotations: ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
@@ -51,8 +53,8 @@ export async function eslint(filesList: string[], diff: string) {
 
     for (const msg of messages) {
       if (annotations.length >= ANNOTATION_LIMIT) break;
-      console.log(`startLine: ${msg.line}`)
-      console.log(`endLine: ${msg.endLine}`)
+      core.info(`startLine: ${msg.line}`)
+      core.info(`endLine: ${msg.endLine}`)
       for (let lineNumber = msg.line; lineNumber <= msg.endLine; lineNumber++)
       {
         if (changedLinesByFilepath.get(filePath).has(lineNumber)) {
