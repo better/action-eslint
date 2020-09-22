@@ -51,7 +51,7 @@ export async function eslint(filesList: string[], diff: string) {
 
       for (let lineNumber = msg.line; lineNumber <= msg.endLine; lineNumber++)
       {
-        if (changedLinesByFilepath.get(filePath).has(lineNumber)) {
+        if (changedLinesByFilepath.get(filePath)?.has(lineNumber)) {
           const annotation = buildAnnotation(filename, msg);
           annotations.push(annotation);
           break;
