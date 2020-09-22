@@ -42,14 +42,17 @@ export async function eslint(filesList: string[], diff: string) {
 
   const annotations: ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
+    console.log(result);
     const { filePath, messages } = result;
     const filename = filesList.find(file => filePath.endsWith(file));
     if (!filename) continue;
 
     for (const msg of messages) {
       if (annotations.length >= ANNOTATION_LIMIT) break;
-      for (let lineNumber = msg.line || 0; lineNumber <= msg.endLine || msg.line || 0; lineNumber++)
+      console.log(msg);
+      for (let lineNumber = (msg.line || 0); lineNumber <= (msg.endLine || msg.line || 0); lineNumber++)
       {
+        console.log(lineNumber);
         if (changedLinesByFilepath.get(filename)?.has(lineNumber)) {
           const annotation = buildAnnotation(filename, msg);
           annotations.push(annotation);
