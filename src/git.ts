@@ -40,7 +40,7 @@ export const getChangedLinesByFile = (diff) => {
 
   for (const hunk of getHunksFromDiff(diff)) {
     const file = hunk[0].split(' ')[3].substring(2);
-    changedLinesByFile.set(file, getChangedLinesFromHunk(hunk));
+    changedLinesByFile.set(file, new Set(getChangedLinesFromHunk(hunk.slice(4))));
   }
   return changedLinesByFile;
 };
