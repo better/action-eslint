@@ -36,7 +36,8 @@ export async function eslint(filesList: string[], diff: string) {
   const cli = new CLIEngine({ extensions: [...EXTENSIONS_TO_LINT] });
   const report = cli.executeOnFiles(filesList);
   // fixableErrorCount, fixableWarningCount are available too
-  const { results, errorCount, warningCount } = report;
+  const { results, warningCount } = report;
+  let errorCount = 0;
 
   const changedLinesByFilepath = getChangedLinesByFilepath(diff)
 
@@ -52,6 +53,9 @@ export async function eslint(filesList: string[], diff: string) {
         if (changedLinesByFilepath.get(filename)?.has(lineNumber)) {
           const annotation = buildAnnotation(filename, msg);
           annotations.push(annotation);
+          if (annotation.annotation_level === 'failure') {
+            errorCount++;
+          }
           break;
         }
       }
