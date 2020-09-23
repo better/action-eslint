@@ -19,6 +19,15 @@ async function run() {
   );
   const context = github.context;
 
+  const { data : diff } = await octokit.pulls.get({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    pull_number: context.issue.number,
+    mediaType: {
+      format: "diff",
+    }
+  })
+
   const prInfo = await octokit.graphql(
     gql`
       query($owner: String!, $name: String!, $prNumber: Int!) {
@@ -90,7 +99,7 @@ async function run() {
   }
 
   try {
-    const { conclusion, output } = await eslint(filesToLint);
+    const { conclusion, output } = await eslint(filesToLint, diff as any as string); // workaround for https://github.com/probot/probot/issues/1026
     await octokit.checks.update({
       ...context.repo,
       check_run_id: checkId,

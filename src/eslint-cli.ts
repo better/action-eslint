@@ -4,6 +4,8 @@ import { ChecksUpdateParamsOutputAnnotations } from '@octokit/rest';
 
 import { EXTENSIONS_TO_LINT } from './constants';
 
+import { getChangedLinesByFilepath } from './git'
+
 const ESLINT_TO_GITHUB_LEVELS: ChecksUpdateParamsOutputAnnotations['annotation_level'][] = [
   'notice',
   'warning',
@@ -26,7 +28,7 @@ const buildAnnotation = (filename, msg) => {
   return annotation;
 };
 
-export async function eslint(filesList: string[]) {
+export async function eslint(filesList: string[], diff: string) {
   const { CLIEngine } = (await import(
     path.join(process.cwd(), 'node_modules/eslint')
   )) as typeof import('eslint');
@@ -36,6 +38,8 @@ export async function eslint(filesList: string[]) {
   // fixableErrorCount, fixableWarningCount are available too
   const { results, errorCount, warningCount } = report;
 
+  const changedLinesByFilepath = getChangedLinesByFilepath(diff)
+
   const annotations: ChecksUpdateParamsOutputAnnotations[] = [];
   for (const result of results) {
     const { filePath, messages } = result;
@@ -44,9 +48,13 @@ export async function eslint(filesList: string[]) {
 
     for (const msg of messages) {
       if (annotations.length >= ANNOTATION_LIMIT) break;
-
-      const annotation = buildAnnotation(filename, msg);
-      annotations.push(annotation);
+      for (let lineNumber = (msg.line || 0); lineNumber <= (msg.endLine || msg.line || 0); lineNumber++) {
+        if (changedLinesByFilepath.get(filename)?.has(lineNumber)) {
+          const annotation = buildAnnotation(filename, msg);
+          annotations.push(annotation);
+          break;
+        }
+      }
     }
   }
 
